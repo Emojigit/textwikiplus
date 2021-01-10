@@ -93,6 +93,8 @@ def main():
 * whoami : know who are you
 * logout : logout
 * exit : Exit TextWikiPlus""")
+            else:
+                print(cmd+": command not found")
         except KeyboardInterrupt:
             print()
             pass
