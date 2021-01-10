@@ -11,7 +11,7 @@ def edit(se,title):
     starttimestamp = tdata[1]
     token = tdata[0]
     pagedata = mw.getpage(se,title)
-    pagecontent = pagadata[0]
+    pagecontent = pagedata[0]
     pageTS = pagedata[1]
     content = editor.editor(pagecontent)
     minor = False
@@ -26,10 +26,10 @@ def edit(se,title):
             break
         else:
             print("Please enter `Y` or `N`.")
-    mw.edit(se,token,title,content,summary,False,False,pageTS,starttimestamp,minor=True)
+    mw.edit(se,token,title,content,summary,False,pageTS,starttimestamp,minor)
 
 def logout(se):
-    token = mw.token(S,"login")[0]
+    token = mw.token(S,"csrf")[0]
     mw.logout(se,token)
 
 def main():
@@ -67,7 +67,7 @@ def main():
                     continue
                 pagedata = mw.getpage(S,param)
                 pagecontent = pagedata[0]
-                editor.ro(pagecontent[0])
+                editor.ro(pagecontent)
             elif cmd == "edit":
                 if param == "":
                     print("Usage: edit <Page title>")
@@ -84,9 +84,18 @@ def main():
             elif cmd == "exit":
                 logout(S)
                 print("Bye")
+            elif cmd == "help":
+                print("""List of command:
+* login <Username> : Login as lgusername
+* view <Title> : view article's Content
+* edit <Title> : Edit an article
+* whoami : know who are you
+* logout : logout
+* exit : Exit TextWikiPlus""")
         except KeyboardInterrupt:
             print()
             pass
 
 if __name__ == '__main__':
     main()
+    editor.remove()

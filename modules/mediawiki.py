@@ -11,7 +11,7 @@ def token(S,ttype):
         }
     R = S.get(url=URL, params=PARAMS_0)
     DATA = R.json()
-    LOGIN_TOKEN = DATA['query']['tokens']['logintoken']
+    LOGIN_TOKEN = DATA['query']['tokens'][ttype+'token']
     return [LOGIN_TOKEN,DATA["curtimestamp"]]
 
 def login(S,token,uname,passwd): # require "login" type token
@@ -55,9 +55,15 @@ def getpage(S,title): # no token required
         tmp = DATA["query"]["pages"]["-1"]["missing"]
         return False
     except TypeError:
-        return [DATA["query"]["pages"][0]["revisions"][0]["slots"]["main"]["*"],TS]
+        return [DATA["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"],TS]
 
-def edit(S,token,title,content,summary,bot,createonly,basetimestamp,starttimestamp,minor=True): # csrf token required
+"""
+def merge_two_dicts(x, y):
+    z = x.copy()   # start with x's keys and values
+    z.update(y)    # modifies z with y's keys and values & returns None
+    return z
+"""
+def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=False): # csrf token required
     PARAMS_3 = {
         "action": "edit",
         "title": title,
@@ -66,10 +72,12 @@ def edit(S,token,title,content,summary,bot,createonly,basetimestamp,starttimesta
         "text": content,
         "summary":"Edit via API: "+summary,
         "bot":bot,
-        "createonly":createonly,
         "headers":{'Content-Type': 'multipart/form-data'},
-        "minor":minor,
     }
+    if minor == True:
+        z = PARAMS_3.copy()
+        z.update({"minor":True})
+        PARAMS_3 = z
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
     # DATA["error"]["code"] have error code
@@ -100,3 +108,8 @@ def logout(S,token): #require csrf token
         "format": "json"
     }
     R = S.post(URL, data=PARAMS_3)
+    DATA = R.json()
+    if DATA == {}:
+        return True
+    else:
+        print("Error while log out: "+DATA["error"]["code"])
