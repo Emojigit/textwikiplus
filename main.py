@@ -66,8 +66,8 @@ def main():
                     print("Usage: view <Page title>")
                     continue
                 pagedata = mw.getpage(S,param)
-                pagecontent = pagadata[0]
-                editor.ro(pagecontent)
+                pagecontent = pagedata[0]
+                editor.ro(pagecontent[0])
             elif cmd == "edit":
                 if param == "":
                     print("Usage: edit <Page title>")

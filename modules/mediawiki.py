@@ -44,18 +44,18 @@ def getpage(S,title): # no token required
     }
     R = S.get(URL, params=PARAMS)
     DATA = R.json()
-    pages = DATA["query"]["pages"]
-    PID = next(iter(pages))
-    TS = ""
-    if PID == "-1":
-        TS = "1970-01-01T00:00:01+00:00"
-    else:
-        TS = pages[PID]["revisions"]["timestamp"]
+
+    # print("Page ID: "+str(page['pageid']))
+    TS = "1970-01-01T00:00:01+00:00"
     try:
-        if DATA["query"]["pages"]["missing"] == True:
-            return False
+        TS = DATA["query"]["pages"][0]["timestamp"]
     except KeyError:
-        return [DATA["query"]["pages"]["revisions"]["slots"]["main"],TS]
+        pass
+    try:
+        tmp = DATA["query"]["pages"]["-1"]["missing"]
+        return False
+    except TypeError:
+        return [DATA["query"]["pages"][0]["revisions"][0]["slots"]["main"]["*"],TS]
 
 def edit(S,token,title,content,summary,bot,createonly,basetimestamp,starttimestamp,minor=True): # csrf token required
     PARAMS_3 = {
