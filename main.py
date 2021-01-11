@@ -100,6 +100,15 @@ def main():
                     print("Usage: rev <Page title>")
                     continue
                 editor.ro(rev.get(mw.revisions(S,param),param))
+            elif cmd == "rollback":
+                if param == "":
+                    print("Usage: rev <Page title>")
+                    continue
+                PARAMSplit = param.split(' ',1)
+                Uname = PARAMSplit[0]
+                Title = PARAMSplit[1]
+                token = mw.token(S,"rollback")[0]
+                mw.rollback(S,token,Title,Uname)
             else:
                 print(cmd+": command not found")
         except KeyboardInterrupt:

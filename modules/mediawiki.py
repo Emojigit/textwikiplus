@@ -89,6 +89,7 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
             raise KeyError
     except KeyError:
         print("Error while edit: "+DATA["error"]["code"])
+        print(DATA["error"]["info"])
         return False
 
 def userinfo(S):
@@ -113,6 +114,7 @@ def logout(S,token): #require csrf token
         return True
     else:
         print("Error while log out: "+DATA["error"]["code"])
+        print(DATA["error"]["info"])
 
 def revisions(S,title):
     PARAMS = {
@@ -134,3 +136,21 @@ def revisions(S,title):
         return [False,PAGES]
     except KeyError:
         return [True,PAGES]
+
+def rollback(S,token,title,username): #rollback token required
+    PARAMS_6 = {
+        "action": "rollback",
+        "format": "json",
+        "title": title,
+        "user": username,
+        "token": token,
+    }
+    R = S.post(URL, data=PARAMS_6)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during rollback: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        return
