@@ -1,7 +1,7 @@
 import subprocess, getpass, os
 EDITOR = "/usr/bin/nano"
 ROVIEW = "/usr/bin/less"
-TMPDIR = "/tmp/textwikiplus-"+str(os.getuid())+"-"+str(os.getpid())
+TMPDIR = "/tmp/textwikiplus-"+str(getpass.getuser())+"-"+str(os.getpid())
 
 def editor(init=""):
     with open(TMPDIR, 'w') as file:
