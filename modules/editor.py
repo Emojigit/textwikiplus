@@ -30,3 +30,7 @@ def ro(content):
     subprocess.Popen([ROVIEW,TMPDIR]).wait()
     with open(TMPDIR, 'w', encoding="utf-8") as file:
         file.write("")
+
+def create():
+    with open(TMPDIR, 'w', encoding="utf-8") as file:
+        file.write("")

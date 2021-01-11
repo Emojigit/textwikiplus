@@ -62,12 +62,7 @@ def getpage(S,title): # no token required
         print(DATA)
         return [DATA["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"],TS]
 
-"""
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
-"""
+
 def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=False): # csrf token required
     PARAMS_3 = {
         "action": "edit",
@@ -124,7 +119,7 @@ def revisions(S,title):
         "action": "query",
         "prop": "revisions",
         "titles": title,
-        "rvprop": "timestamp|user|comment|content|tags",
+        "rvprop": "timestamp|user|comment|content|tags|ids",
         "rvslots": "main",
         "formatversion": "2",
         "format": "json",

@@ -33,6 +33,7 @@ def logout(se):
     mw.logout(se,token)
 
 def main():
+    editor.create()
     print("TextWikiEdit Plus By Cato Yiu")
     print("Copyright (c) 2020 Cato Yiu")
     print("This program is under GNU GPLv3 license.")
@@ -98,7 +99,7 @@ def main():
                 if param == "":
                     print("Usage: rev <Page title>")
                     continue
-                print(rev.get(mw.revisions(S,param)))
+                print(rev.get(mw.revisions(S,param),param))
             else:
                 print(cmd+": command not found")
         except KeyboardInterrupt:
@@ -107,4 +108,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    editor.remove()
