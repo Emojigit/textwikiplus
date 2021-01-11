@@ -320,3 +320,57 @@ def getimage(S,iname):
         print("Not a file!")
         return False
     return S.get(IURL).content
+
+def userinfo(S,uname):
+    PARAMS = {
+        "action": "query",
+        "format": "json",
+        "list": "users",
+        "ususers": uname,
+        "usprop": "blockinfo|cancreate|centralids|editcount|emailable|gender|groupmemberships|groups|implicitgroups|registration|rights",
+        "utf8": "",
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during getting extensions infomations: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        USER = DATA["query"]["users"][0]
+        try:
+            ERR = USER["invalid"]
+            print("Error during getting extensions infomations: invalid username")
+        except KeyError:
+            try:
+                ERR = USER["missing"]
+                print("Error during getting extensions infomations: user not found")
+            except KeyError:
+                GSTR = ""
+                for v in USER["groupmemberships"]:
+                    GSTR = v["group"] + " "
+                IGSTR = ""
+                for v in USER["implicitgroups"]:
+                    ICSTR = v + " "
+                BED = "False"
+                try:
+                    TMP = USER["blockid"]
+                    BED = "True"
+                    del TMP
+                except KeyError:
+                    pass
+                RSTR = "User Info:"
+                RSTR = RSTR + "\n         Username: " + USER["name"]
+                RSTR = RSTR + "\n       Edit Count: " + str(USER["editcount"])
+                RSTR = RSTR + "\n      Register at: " + USER["registration"]
+                RSTR = RSTR + "\nGroup Memberships: " + GSTR
+                RSTR = RSTR + "\n  Implicit Groups: " + IGSTR
+                RSTR = RSTR + "\n          Blocked: " + BED
+                if BED == "True":
+                    RSTR = RSTR + "\n       Blocked By: " + USER["blockedby"]
+                    RSTR = RSTR + "\n     Block Reason: " + USER["blockreason"]
+                    RSTR = RSTR + "\n      Block Start: " + USER["blockedtimestamp"]
+                    RSTR = RSTR + "\n     Block Expiry: " + USER["blockexpiry"]
+                RSTR = RSTR + "\n           Gender: " + USER["gender"]
+                print(RSTR)

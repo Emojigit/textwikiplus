@@ -180,6 +180,11 @@ def main():
                 if cont == False:
                     continue
                 bsave.bsave(path,cont)
+            elif cmd == "userinfo":
+                if param == "":
+                    print("Usage: Userinfo <Username>")
+                    continue
+                mw.userinfo(S,param)
             elif cmd == "":
                 continue
             else:
