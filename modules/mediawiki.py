@@ -52,9 +52,14 @@ def getpage(S,title): # no token required
     except KeyError:
         pass
     try:
-        tmp = DATA["query"]["pages"]["-1"]["missing"]
-        return False
+        try:
+            tmp = DATA["query"]["pages"][0]["missing"]
+            return ["",TS]
+        except KeyError:
+            tmp = DATA["query"]["pages"]["-1"]["missing"]
+            return ["",TS]
     except TypeError:
+        print(DATA)
         return [DATA["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"],TS]
 
 """
@@ -70,7 +75,7 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         "token": token,
         "format": "json",
         "text": content,
-        "summary":"Edit via API: "+summary,
+        "summary":"Edit via [[User:Emojiwiki/TextWikiPlus]] : "+summary,
         "bot":bot,
         "headers":{'Content-Type': 'multipart/form-data'},
     }

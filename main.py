@@ -84,6 +84,7 @@ def main():
             elif cmd == "exit":
                 logout(S)
                 print("Bye")
+                editor.remove()
                 exit(0)
             elif cmd == "help":
                 print("""List of command:
