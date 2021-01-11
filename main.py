@@ -28,6 +28,22 @@ def edit(se,title):
             print("Please enter `Y` or `N`.")
     mw.edit(se,token,title,content,summary,False,pageTS,starttimestamp,minor)
 
+def undo(se,title,id):
+    tdata = mw.token(se,"csrf")
+    token = tdata[0]
+    minor = False
+    while True:
+        minput = input("Do you want to mark your edit a minor edit? (Y/N) ")
+        if minput == "Y" or minput == "y":
+            minor = True
+            break
+        elif minput == "N" or minput == "n":
+            minor = False
+            break
+        else:
+            print("Please enter `Y` or `N`.")
+    mw.undo(se,token,title,id,False,minor)
+
 def logout(se):
     token = mw.token(S,"csrf")[0]
     mw.logout(se,token)
@@ -109,11 +125,24 @@ def main():
                 Title = PARAMSplit[1]
                 token = mw.token(S,"rollback")[0]
                 mw.rollback(S,token,Title,Uname)
+            elif cmd == "undo":
+                if param == "":
+                    print("Usage: rev <Page title>")
+                    continue
+                PARAMSplit = param.split(' ',1)
+                ID = PARAMSplit[0]
+                Title = PARAMSplit[1]
+                undo(S,Title,int(ID))
             else:
                 print(cmd+": command not found")
         except KeyboardInterrupt:
             print()
             pass
+        except:
+            editor.create()
+            editor.remove()
+            raise
+
 
 if __name__ == '__main__':
     main()

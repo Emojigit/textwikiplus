@@ -59,7 +59,6 @@ def getpage(S,title): # no token required
             tmp = DATA["query"]["pages"]["-1"]["missing"]
             return ["",TS]
     except TypeError:
-        print(DATA)
         return [DATA["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"],TS]
 
 
@@ -73,6 +72,8 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         "summary":"Edit via [[User:Emojiwiki/TextWikiPlus]] : "+summary,
         "bot":bot,
         "headers":{'Content-Type': 'multipart/form-data'},
+        "basetimestamp":basetimestamp,
+        "starttimestamp":starttimestamp,
     }
     if minor == True:
         z = PARAMS_3.copy()
@@ -154,3 +155,32 @@ def rollback(S,token,title,username): #rollback token required
         return
     except KeyError:
         return
+
+def undo(S,token,title,id,bot,minor=False): # csrf token required
+    PARAMS_3 = {
+        "action": "edit",
+        "title": title,
+        "token": token,
+        "format": "json",
+        "undo": id,
+        "summary":"Edit via [[User:Emojiwiki/TextWikiPlus]] : Rollback",
+        "bot":bot,
+        "headers":{'Content-Type': 'multipart/form-data'},
+    }
+    if minor == True:
+        z = PARAMS_3.copy()
+        z.update({"minor":True})
+        PARAMS_3 = z
+    R = S.post(URL, data=PARAMS_3)
+    DATA = R.json()
+    # DATA["error"]["code"] have error code
+    # first check DATA["edit"]["result"]
+    try:
+        if DATA["edit"]["result"] == "Success":
+            return True
+        else:
+            raise KeyError
+    except KeyError:
+        print("Error while edit: "+DATA["error"]["code"])
+        print(DATA["error"]["info"])
+        return False
