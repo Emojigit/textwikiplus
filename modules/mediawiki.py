@@ -45,8 +45,9 @@ def getpage(S,title): # no token required
     R = S.get(URL, params=PARAMS)
     DATA = R.json()
     TS = "1970-01-01T00:00:01+00:00"
+    print(DATA)
     try:
-        TS = DATA["query"]["pages"][0]["timestamp"]
+        TS = DATA["query"]["pages"][0]["revisions"][0]["timestamp"]
     except KeyError:
         pass
     try:
