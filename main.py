@@ -121,8 +121,12 @@ def main():
                     print("Usage: rollback <Username> <Title>")
                     continue
                 PARAMSplit = param.split(' ',1)
-                Uname = PARAMSplit[0]
-                Title = PARAMSplit[1]
+                try:
+                    Uname = PARAMSplit[0]
+                    Title = PARAMSplit[1]
+                except KeyError:
+                    print("Usage: getimage <Image Name> <Path>")
+                    continue
                 token = mw.token(S,"rollback")[0]
                 mw.rollback(S,token,Title,Uname)
             elif cmd == "undo":
@@ -130,8 +134,12 @@ def main():
                     print("Usage: undo <ID> <title>")
                     continue
                 PARAMSplit = param.split(' ',1)
-                ID = PARAMSplit[0]
-                Title = PARAMSplit[1]
+                try:
+                    ID = PARAMSplit[0]
+                    Title = PARAMSplit[1]
+                except KeyError:
+                    print("Usage: getimage <Image Name> <Path>")
+                    continue
                 try:
                     undo(S,Title,int(ID))
                 except ValueError:
@@ -162,8 +170,12 @@ def main():
                     print("Usage: getimage <Image Name> <Path>")
                     continue
                 PARAMSplit = param.split(' ',1)
-                iname = PARAMSplit[0]
-                path = PARAMSplit[1]
+                try:
+                    iname = PARAMSplit[0]
+                    path = PARAMSplit[1]
+                except KeyError:
+                    print("Usage: getimage <Image Name> <Path>")
+                    continue
                 cont = mw.getimage(S,iname)
                 if cont == False:
                     continue
