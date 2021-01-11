@@ -8,7 +8,7 @@ def token(S,ttype):
         'type':ttype,
         'format':"json",
         'curtimestamp':True,
-        }
+    }
     R = S.get(url=URL, params=PARAMS_0)
     DATA = R.json()
     LOGIN_TOKEN = DATA['query']['tokens'][ttype+'token']
@@ -44,8 +44,6 @@ def getpage(S,title): # no token required
     }
     R = S.get(URL, params=PARAMS)
     DATA = R.json()
-
-    # print("Page ID: "+str(page['pageid']))
     TS = "1970-01-01T00:00:01+00:00"
     try:
         TS = DATA["query"]["pages"][0]["timestamp"]
@@ -81,8 +79,6 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         PARAMS_3 = z
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
-    # DATA["error"]["code"] have error code
-    # first check DATA["edit"]["result"]
     try:
         if DATA["edit"]["result"] == "Success":
             return True
@@ -173,8 +169,6 @@ def undo(S,token,title,id,bot,minor=False): # csrf token required
         PARAMS_3 = z
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
-    # DATA["error"]["code"] have error code
-    # first check DATA["edit"]["result"]
     try:
         if DATA["edit"]["result"] == "Success":
             return True
@@ -186,7 +180,6 @@ def undo(S,token,title,id,bot,minor=False): # csrf token required
         return False
 
 def random(S,ns):
-    # https://zh.wikipedia.org/w/api.php?action=query&list=random&rnlimit=1&rnnamespace=0
     PARAMS = {
         "action":"query",
         "list":"random",
@@ -285,7 +278,7 @@ def exinfo(S):
     except KeyError:
         OSTR = "Extensions info:"
         for v in DATA["query"]["extensions"]:
-            VER = "" # v["version"]
+            VER = ""
             try:
                 VER = v["version"]
             except KeyError:
@@ -311,7 +304,6 @@ def getimage(S,iname):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
-    # print(DATA)
     PAGES = next(iter(DATA["query"]["pages"].values()))
     IURL = ""
     try:

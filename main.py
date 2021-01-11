@@ -4,7 +4,6 @@ from modules import mediawiki as mw
 from modules import editor, rev, bsave
 import requests, getpass
 S = requests.Session()
-# editor.editor
 
 def edit(se,title):
     tdata = mw.token(se,"csrf")
@@ -165,7 +164,6 @@ def main():
             elif cmd == "exinfo":
                 editor.ro(mw.exinfo(S))
             elif cmd == "getimage":
-                # getimage(S,iname)
                 if param == "":
                     print("Usage: getimage <Image Name> <Path>")
                     continue
