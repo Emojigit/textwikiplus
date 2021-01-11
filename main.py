@@ -81,9 +81,11 @@ def main():
                     print("You are "+uinfo["name"]+", the user ID is "+str(uinfo["id"]))
             elif cmd == "logout":
                 logout(S)
+                editor.remove()
             elif cmd == "exit":
                 logout(S)
                 print("Bye")
+                editor.remove()
                 exit(0)
             elif cmd == "help":
                 print("""List of command:
