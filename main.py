@@ -109,6 +109,16 @@ def main():
 * edit <Title> : Edit an article
 * whoami : know who are you
 * logout : logout
+* rev <Title> : Get page history
+* rollback <Username> <title> : Rollback edit by Username in a page
+* undo <ID> <title> : Undo edit with ID <ID> in page <title>
+* random [NS ID] : Get random page title in [NS ID] or main namespace
+* clear : clear the screen
+* nsinfo : Get wiki's namespaces infomation
+* wikiinfo : Get wiki's general infomations
+* exinfo : Get wii's extensions infomation
+* getimage <File name> <Local dir> : Download a remote image
+* userinfo <Username> : get user info
 * exit : Exit TextWikiPlus""")
             elif cmd == "rev":
                 if param == "":
