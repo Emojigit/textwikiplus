@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from modules import mediawiki as mw
-from modules import editor
+from modules import editor, rev
 import requests, getpass
 S = requests.Session()
 # editor.editor
@@ -93,6 +93,11 @@ def main():
 * whoami : know who are you
 * logout : logout
 * exit : Exit TextWikiPlus""")
+            elif cmd == "rev":
+                if param == "":
+                    print("Usage: rev <Page title>")
+                    continue
+                print(rev.get(mw.revisions(S,param)))
             else:
                 print(cmd+": command not found")
         except KeyboardInterrupt:

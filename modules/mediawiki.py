@@ -113,3 +113,24 @@ def logout(S,token): #require csrf token
         return True
     else:
         print("Error while log out: "+DATA["error"]["code"])
+
+def revisions(S,title):
+    PARAMS = {
+        "action": "query",
+        "prop": "revisions",
+        "titles": title,
+        "rvprop": "timestamp|user|comment|content|tags",
+        "rvslots": "main",
+        "formatversion": "2",
+        "format": "json",
+        "rvlimit":500,
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    PAGES = DATA["query"]["pages"]
+
+    try:
+        tmp = PAGES[0]["missing"]
+        return [False,PAGES]
+    except KeyError:
+        return [True,PAGES]
