@@ -3,6 +3,7 @@
 from modules import mediawiki as mw
 from modules import editor, rev
 import requests, getpass
+S = requests.Session()
 # editor.editor
 
 def edit(se,title):
@@ -48,7 +49,6 @@ def logout(se):
     mw.logout(se,token)
 
 def main():
-    S = requests.Session()
     editor.create()
     print("TextWikiEdit Plus By Cato Yiu")
     print("Copyright (c) 2020 Cato Yiu")
@@ -154,6 +154,8 @@ def main():
                 mw.nsinfo(S)
             elif cmd == "wikiinfo":
                 print(mw.wikiinfo(S))
+            elif cmd == "exinfo":
+                editor.ro(mw.exinfo(S))
             elif cmd == "":
                 continue
             else:

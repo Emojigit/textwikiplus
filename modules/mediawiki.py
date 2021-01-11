@@ -242,7 +242,7 @@ def wikiinfo(S):
     DATA = R.json()
     try:
         ERR = DATA["error"]["code"]
-        print("Error during getting namespace infomations: "+ERR)
+        print("Error during getting wiki infomations: "+ERR)
         print(DATA["error"]["info"])
         return
     except KeyError:
@@ -265,4 +265,38 @@ def wikiinfo(S):
         OSTR = OSTR + "\n      Wiki ID: " + INFO["wikiid"]
         OSTR = OSTR + "\n      Favicon: " + INFO["favicon"]
         OSTR = OSTR + "\nMobile Server: " + INFO["mobileserver"]
+        return OSTR
+
+def exinfo(S):
+    PARAMS = {
+        "action": "query",
+        "meta": "siteinfo",
+        "formatversion": "2",
+        "format": "json",
+        "siprop":"extensions",
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during getting extensions infomations: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        OSTR = "Extensions info:"
+        for v in DATA["query"]["extensions"]:
+            VER = "" # v["version"]
+            try:
+                VER = v["version"]
+            except KeyError:
+                try:
+                    VER = v["vcs-system"] + "-" + v["vcs-version"]
+                except KeyError:
+                    pass
+            descriptionmsg = "No description message provied."
+            try:
+                descriptionmsg = v["descriptionmsg"]
+            except KeyError:
+                pass
+            OSTR = OSTR + "\n" + v["name"] + " " + VER + " (" + descriptionmsg + ")"
         return OSTR
