@@ -45,7 +45,6 @@ def getpage(S,title): # no token required
     R = S.get(URL, params=PARAMS)
     DATA = R.json()
     TS = "1970-01-01T00:00:01+00:00"
-    print(DATA)
     try:
         TS = DATA["query"]["pages"][0]["revisions"][0]["timestamp"]
     except KeyError:
@@ -254,7 +253,7 @@ def wikiinfo(S):
         OSTR = OSTR + "\n     Git Hash: " + INFO["git-hash"]
         OSTR = OSTR + "\n   Git Branch: " + INFO["git-branch"]
         OSTR = OSTR + "\n    Read Only: " + RO
-        OSTR = OSTR + "\n  Server Time: " + INFO["servername"] + " " + INFO["timezone"]
+        OSTR = OSTR + "\n  Server Time: " + INFO["time"] + " " + INFO["timezone"]
         OSTR = OSTR + "\n  Server Name: " + INFO["servername"]
         OSTR = OSTR + "\n      Wiki ID: " + INFO["wikiid"]
         OSTR = OSTR + "\n      Favicon: " + INFO["favicon"]
