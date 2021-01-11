@@ -1,9 +1,9 @@
 def get(PAGEDEF, title):
     status = PAGEDEF[0]
-    REVS = PAGEDEF[1][0]["revisions"]
     if status == False:
         return "Page `"+title+"` doesn't exist"
     else:
+        REVS = PAGEDEF[1][0]["revisions"]
         RETSTR = "The history of `"+title+"`"
         for i in REVS:
             RETSTR = RETSTR + "\n"
