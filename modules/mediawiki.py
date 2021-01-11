@@ -229,3 +229,40 @@ def nsinfo(S):
                 NSNAME = "(main)"
             OSTR = OSTR + "\n" + NSNAME + " ID:" + k
         print(OSTR)
+
+def wikiinfo(S):
+    PARAMS = {
+        "action": "query",
+        "meta": "siteinfo",
+        "formatversion": "2",
+        "format": "json",
+        "siprop":"general",
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during getting namespace infomations: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        INFO = DATA["query"]["general"]
+        RO = "False"
+        if INFO["readonly"] == True:
+            RO = "True"
+        OSTR = "Infomations about the wiki:"
+        OSTR = OSTR + "\n    Main Page: " + INFO["mainpage"]
+        OSTR = OSTR + "\n    Site name: " + INFO["sitename"]
+        OSTR = OSTR + "\n         Logo: " + INFO["logo"]
+        OSTR = OSTR + "\n  Php Version: " + INFO["phpversion"]
+        OSTR = OSTR + "\n      DB Type: " + INFO["dbtype"]
+        OSTR = OSTR + "\n   DB Version: " + INFO["dbversion"]
+        OSTR = OSTR + "\n     Git Hash: " + INFO["git-hash"]
+        OSTR = OSTR + "\n   Git Branch: " + INFO["git-branch"]
+        OSTR = OSTR + "\n    Read Only: " + RO
+        OSTR = OSTR + "\n  Server Time: " + INFO["servername"] + " " + INFO["timezone"]
+        OSTR = OSTR + "\n  Server Name: " + INFO["servername"]
+        OSTR = OSTR + "\n      Wiki ID: " + INFO["wikiid"]
+        OSTR = OSTR + "\n      Favicon: " + INFO["favicon"]
+        OSTR = OSTR + "\nMobile Server: " + INFO["mobileserver"]
+        return OSTR
