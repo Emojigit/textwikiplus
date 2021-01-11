@@ -184,3 +184,24 @@ def undo(S,token,title,id,bot,minor=False): # csrf token required
         print("Error while edit: "+DATA["error"]["code"])
         print(DATA["error"]["info"])
         return False
+
+def random(S,ns):
+    # https://zh.wikipedia.org/w/api.php?action=query&list=random&rnlimit=1&rnnamespace=0
+    PARAMS = {
+        "action":"query",
+        "list":"random",
+        "rnlimit":1,
+        "rnnamespace":0,
+        "utf8":"",
+        "format":"json",
+        "rnnamespace":ns,
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during finding random page: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        print(DATA["query"]["random"][0]["title"])

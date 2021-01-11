@@ -118,7 +118,7 @@ def main():
                 editor.ro(rev.get(mw.revisions(S,param),param))
             elif cmd == "rollback":
                 if param == "":
-                    print("Usage: rev <Page title>")
+                    print("Usage: rollback <Username> <Title>")
                     continue
                 PARAMSplit = param.split(' ',1)
                 Uname = PARAMSplit[0]
@@ -127,12 +127,27 @@ def main():
                 mw.rollback(S,token,Title,Uname)
             elif cmd == "undo":
                 if param == "":
-                    print("Usage: rev <Page title>")
+                    print("Usage: undo <ID> <title>")
                     continue
                 PARAMSplit = param.split(' ',1)
                 ID = PARAMSplit[0]
                 Title = PARAMSplit[1]
-                undo(S,Title,int(ID))
+                try:
+                    undo(S,Title,int(ID))
+                except ValueError:
+                    print("Usage: rev <ID> <title>")
+                    pass
+            elif cmd == "random":
+                ns = 0
+                if param == "":
+                    ns = 0
+                else:
+                    try:
+                        ns = int(param)
+                    except ValueError:
+                        print("Param must be None or int!")
+                        continue
+                mw.random(S,ns)
             elif cmd == "clear":
                 print(chr(27) + "[2J")
             elif cmd == "":
