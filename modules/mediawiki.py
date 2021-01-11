@@ -300,3 +300,23 @@ def exinfo(S):
                 pass
             OSTR = OSTR + "\n" + v["name"] + " " + VER + " (" + descriptionmsg + ")"
         return OSTR
+
+def getimage(S,iname):
+    PARAMS = {
+        "action": "query",
+        "format": "json",
+        "prop": "imageinfo",
+        "titles": iname,
+        "iiprop":"url",
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    # print(DATA)
+    PAGES = next(iter(DATA["query"]["pages"].values()))
+    IURL = ""
+    try:
+        IURL = PAGES["imageinfo"][0]["url"]
+    except:
+        print("Not a file!")
+        return False
+    return S.get(IURL).content

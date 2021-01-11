@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from modules import mediawiki as mw
-from modules import editor, rev
+from modules import editor, rev, bsave
 import requests, getpass
 S = requests.Session()
 # editor.editor
@@ -156,6 +156,18 @@ def main():
                 print(mw.wikiinfo(S))
             elif cmd == "exinfo":
                 editor.ro(mw.exinfo(S))
+            elif cmd == "getimage":
+                # getimage(S,iname)
+                if param == "":
+                    print("Usage: getimage <Image Name> <Path>")
+                    continue
+                PARAMSplit = param.split(' ',1)
+                iname = PARAMSplit[0]
+                path = PARAMSplit[1]
+                cont = mw.getimage(S,iname)
+                if cont == False:
+                    continue
+                bsave.bsave(path,cont)
             elif cmd == "":
                 continue
             else:
