@@ -133,6 +133,10 @@ def main():
                 ID = PARAMSplit[0]
                 Title = PARAMSplit[1]
                 undo(S,Title,int(ID))
+            elif cmd == "clear":
+                print(chr(27) + "[2J")
+            elif cmd == "":
+                continue
             else:
                 print(cmd+": command not found")
         except KeyboardInterrupt:
