@@ -205,3 +205,27 @@ def random(S,ns):
         return
     except KeyError:
         print(DATA["query"]["random"][0]["title"])
+
+def nsinfo(S):
+    PARAMS = {
+        "action": "query",
+        "meta": "siteinfo",
+        "formatversion": "2",
+        "format": "json",
+        "siprop":"namespaces",
+    }
+    R = S.get(url=URL, params=PARAMS)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during getting namespace infomations: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        OSTR = "Namespace info:"
+        for k, v in DATA["query"]["namespaces"].items():
+            NSNAME = v["name"]
+            if NSNAME == "":
+                NSNAME = "(main)"
+            OSTR = OSTR + "\n" + NSNAME + " ID:" + k
+        print(OSTR)

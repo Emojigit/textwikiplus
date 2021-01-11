@@ -150,6 +150,8 @@ def main():
                 mw.random(S,ns)
             elif cmd == "clear":
                 print(chr(27) + "[2J")
+            elif cmd == "nsinfo":
+                mw.nsinfo(S)
             elif cmd == "":
                 continue
             else:
