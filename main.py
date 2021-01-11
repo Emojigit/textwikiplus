@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from modules import mediawiki as mw
 from modules import editor
-import requests, getpass
+import requests, getpass, readline
 S = requests.Session()
 # editor.editor
 
