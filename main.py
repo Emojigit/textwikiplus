@@ -99,7 +99,7 @@ def main():
                 if param == "":
                     print("Usage: rev <Page title>")
                     continue
-                print(rev.get(mw.revisions(S,param),param))
+                editor.ro(rev.get(mw.revisions(S,param),param))
             else:
                 print(cmd+": command not found")
         except KeyboardInterrupt:
