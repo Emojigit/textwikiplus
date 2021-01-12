@@ -67,7 +67,7 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         "token": token,
         "format": "json",
         "text": content,
-        "summary":"Edit via [[User:Emojiwiki/TextWikiPlus]] : "+summary,
+        "summary":"Edit via [[User:Emojiwiki/TextWikiPlus|TextWikiPlus]] : "+summary,
         "bot":bot,
         "headers":{'Content-Type': 'multipart/form-data'},
         "basetimestamp":basetimestamp,
@@ -89,7 +89,7 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         print(DATA["error"]["info"])
         return False
 
-def userinfo(S):
+def whoami(S):
     PARAMS = {
         "action": "query",
         "format": "json",
@@ -152,14 +152,14 @@ def rollback(S,token,title,username): #rollback token required
     except KeyError:
         return
 
-def undo(S,token,title,id,bot,minor=False): # csrf token required
+def undo(S,token,title,id,bot,minor=False,reason=""): # csrf token required
     PARAMS_3 = {
         "action": "edit",
         "title": title,
         "token": token,
         "format": "json",
         "undo": id,
-        "summary":"Edit via [[User:Emojiwiki/TextWikiPlus]] : Rollback",
+        "summary":"Undo edit [[Special:PermanentLink/" + str(id) + "|" + str(id) + "]] via [[User:Emojiwiki/TextWikiPlus|TextWikiPlus]]: " + reason,
         "bot":bot,
         "headers":{'Content-Type': 'multipart/form-data'},
     }

@@ -38,6 +38,7 @@ def undo(se,title,id):
     tdata = mw.token(se,"csrf")
     token = tdata[0]
     minor = False
+    summary = input("Please type your edit summary: ")
     while True:
         minput = input("Do you want to mark your edit a minor edit? (Y/N) ")
         if minput == "Y" or minput == "y":
@@ -48,7 +49,7 @@ def undo(se,title,id):
             break
         else:
             print("Please enter `Y` or `N`.")
-    mw.undo(se,token,title,id,False,minor)
+    mw.undo(se,token,title,id,False,minor,summary)
 
 def logout(se):
     token = mw.token(S,"csrf")[0]
@@ -97,7 +98,7 @@ def main():
                     continue
                 edit(S,param)
             elif cmd == "whoami":
-                uinfo = mw.userinfo(S)
+                uinfo = mw.whoami(S)
                 if uinfo["id"] == 0:
                     print("You are IP user, the IP is "+uinfo["name"])
                 else:
