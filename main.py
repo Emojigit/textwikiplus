@@ -27,6 +27,13 @@ def edit(se,title):
             print("Please enter `Y` or `N`.")
     mw.edit(se,token,title,content,summary,False,pageTS,starttimestamp,minor)
 
+def emailuser(se,uname):
+    tdata = mw.token(se,"csrf")
+    token = tdata[0]
+    title = input("Email subject: ")
+    content = editor.editor("")
+    mw.emailuser(se,token,uname,title,content)
+
 def undo(se,title,id):
     tdata = mw.token(se,"csrf")
     token = tdata[0]
@@ -193,6 +200,11 @@ def main():
                     print("Usage: Userinfo <Username>")
                     continue
                 mw.userinfo(S,param)
+            elif cmd == "euser" or cmd == "emailuser":
+                if param == "":
+                    print("Usage: emailuser <Username>")
+                    continue
+                emailuser(S,param)
             elif cmd == "":
                 continue
             else:

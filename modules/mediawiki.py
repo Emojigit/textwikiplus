@@ -366,3 +366,22 @@ def userinfo(S,uname):
                     RSTR = RSTR + "\n     Block Expiry: " + USER["blockexpiry"]
                 RSTR = RSTR + "\n           Gender: " + USER["gender"]
                 print(RSTR)
+
+def emailuser(S,token,target,subj,text): # csrf token required
+    PARAMS_3 = {
+        "action": "emailuser",
+        "target": target,
+        "subject": subj,
+        "text": text + "\n\nThis email was sent from https://zhwp.org/U:Emojiwiki/TextWikiPlus \nIf you found any bugs, please report them.",
+        "token": token,
+        "format": "json"
+    }
+    R = S.post(URL, data=PARAMS_3)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during sending emails: "+ERR)
+        print(DATA["error"]["info"])
+        return
+    except KeyError:
+        pass
