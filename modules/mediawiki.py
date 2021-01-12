@@ -1,5 +1,16 @@
 import requests
 URL = "https://zh.wikipedia.org/w/api.php"
+DEBUG = [False]
+def setdebug(status=None):
+    if status != None:
+        DEBUG[0] = status
+    return DEBUG
+
+def debugctl(DATA):
+    if DEBUG[0] == True:
+        print("[DEBUG] printing request result:")
+        print(DATA)
+        print("------")
 
 def token(S,ttype):
     PARAMS_0 = {
@@ -11,6 +22,7 @@ def token(S,ttype):
     }
     R = S.get(url=URL, params=PARAMS_0)
     DATA = R.json()
+    debugctl(DATA)
     LOGIN_TOKEN = DATA['query']['tokens'][ttype+'token']
     return [LOGIN_TOKEN,DATA["curtimestamp"]]
 
@@ -24,6 +36,7 @@ def login(S,token,uname,passwd): # require "login" type token
     }
     R = S.post(URL, data=PARAMS_1)
     DATA = R.json()
+    debugctl(DATA)
     status = DATA["login"]["result"]
     if status == "Success":
         print("Logged in as "+DATA["login"]["lgusername"])
@@ -44,6 +57,7 @@ def getpage(S,title): # no token required
     }
     R = S.get(URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     TS = "1970-01-01T00:00:01+00:00"
     try:
         TS = DATA["query"]["pages"][0]["revisions"][0]["timestamp"]
@@ -79,6 +93,7 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         PARAMS_3 = z
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
+    debugctl(DATA)
     try:
         if DATA["edit"]["result"] == "Success":
             return True
@@ -97,6 +112,7 @@ def whoami(S):
     }
     R = S.get(URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     return DATA["query"]["userinfo"]
 
 def logout(S,token): #require csrf token
@@ -107,6 +123,7 @@ def logout(S,token): #require csrf token
     }
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
+    debugctl(DATA)
     if DATA == {}:
         return True
     else:
@@ -126,8 +143,8 @@ def revisions(S,title):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     PAGES = DATA["query"]["pages"]
-
     try:
         tmp = PAGES[0]["missing"]
         return [False,PAGES]
@@ -144,6 +161,7 @@ def rollback(S,token,title,username): #rollback token required
     }
     R = S.post(URL, data=PARAMS_6)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during rollback: "+ERR)
@@ -169,6 +187,7 @@ def undo(S,token,title,id,bot,minor=False,reason=""): # csrf token required
         PARAMS_3 = z
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
+    debugctl(DATA)
     try:
         if DATA["edit"]["result"] == "Success":
             return True
@@ -191,6 +210,7 @@ def random(S,ns):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during finding random page: "+ERR)
@@ -209,6 +229,7 @@ def nsinfo(S):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during getting namespace infomations: "+ERR)
@@ -233,6 +254,7 @@ def wikiinfo(S):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during getting wiki infomations: "+ERR)
@@ -270,6 +292,7 @@ def exinfo(S):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during getting extensions infomations: "+ERR)
@@ -304,6 +327,7 @@ def getimage(S,iname):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     PAGES = next(iter(DATA["query"]["pages"].values()))
     IURL = ""
     try:
@@ -324,6 +348,7 @@ def userinfo(S,uname):
     }
     R = S.get(url=URL, params=PARAMS)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during getting extensions infomations: "+ERR)
@@ -378,6 +403,7 @@ def emailuser(S,token,target,subj,text): # csrf token required
     }
     R = S.post(URL, data=PARAMS_3)
     DATA = R.json()
+    debugctl(DATA)
     try:
         ERR = DATA["error"]["code"]
         print("Error during sending emails: "+ERR)
