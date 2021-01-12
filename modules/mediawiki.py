@@ -380,7 +380,7 @@ def userinfo(S,uname):
                 RSTR = "User Info:"
                 RSTR = RSTR + "\n         Username: " + USER["name"]
                 RSTR = RSTR + "\n       Edit Count: " + str(USER["editcount"])
-                RSTR = RSTR + "\n      Register at: " + USER["registration"]
+                RSTR = RSTR + "\n      Register at: " + str(USER["registration"])
                 RSTR = RSTR + "\nGroup Memberships: " + GSTR
                 RSTR = RSTR + "\n  Implicit Groups: " + IGSTR
                 RSTR = RSTR + "\n          Blocked: " + BED
