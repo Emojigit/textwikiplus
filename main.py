@@ -229,7 +229,8 @@ def main():
             print()
             pass
         except:
-            editor.create()
+            print()
+            print("[ERROR] an error raised! You can report it at https://github.com/Emojigit/textwikiplus")
             editor.remove()
             raise
 
