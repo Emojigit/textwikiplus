@@ -413,3 +413,21 @@ def emailuser(S,token,target,subj,text): # csrf token required
         return
     except KeyError:
         pass
+
+def usercontribs(S,uname):
+    PARAMS = {
+        "action": "query",
+        "format": "json",
+        "list": "usercontribs",
+        "ucuser": uname,
+        "uclimit": 50
+    }
+    R = S.get(url=URL[0], params=PARAMS)
+    DATA = R.json()
+    try:
+        ERR = DATA["error"]["code"]
+        print("Error during getting user contribs: "+ERR)
+        print(DATA["error"]["info"])
+        return [False]
+    except KeyError:
+        return [True,DATA["query"]["usercontribs"]]

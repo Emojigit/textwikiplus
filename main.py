@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from modules import mediawiki as mw
-from modules import editor, rev, bsave, chroot
+from modules import editor, rev, bsave, chroot, uc
 import requests, getpass
 from modules.err import ParamError
 S = requests.Session()
@@ -221,7 +221,11 @@ def main():
                     mw.setdebug(False)
                 else:
                     print("current debug state: "+str(mw.setdebug()))
-
+            elif cmd == "uc" or cmd == "usercontribs":
+                if param == "":
+                    print("Usage: usercontribs <Username>")
+                    continue
+                editor.ro(uc.get(mw.usercontribs(S,param.rstrip()),param.rstrip()))
             elif cmd == "":
                 continue
             else:
