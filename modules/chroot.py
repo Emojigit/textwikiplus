@@ -17,6 +17,8 @@ def chroot():
                 for x, y in defwiki.items():
                     if root == x:
                         return y
+                if root == "":
+                    continue
                 a = None
                 try:
                     a = requests.get(root)
