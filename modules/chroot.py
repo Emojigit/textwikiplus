@@ -1,4 +1,4 @@
-import requests
+import requests, sys
 defwiki = {
     "zhwp": "https://zh.wikipedia.org/w/api.php",
     "enwp": "https://en.wikipedia.org/w/api.php",
@@ -19,6 +19,8 @@ def chroot():
                         return y
                 if root == "":
                     continue
+                elif root == "quit":
+                    sys.exit()
                 a = None
                 try:
                     a = requests.get(root)
