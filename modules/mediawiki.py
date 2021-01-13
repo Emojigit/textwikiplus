@@ -1,5 +1,7 @@
 import requests
-URL = "https://zh.wikipedia.org/w/api.php"
+URL = ["https://zh.wikipedia.org/w/api.php"]
+def chroot(root):
+    URL[0] = root
 DEBUG = [False]
 def setdebug(status=None):
     if status != None:
@@ -20,7 +22,7 @@ def token(S,ttype):
         'format':"json",
         'curtimestamp':True,
     }
-    R = S.get(url=URL, params=PARAMS_0)
+    R = S.get(url=URL[0], params=PARAMS_0)
     DATA = R.json()
     debugctl(DATA)
     LOGIN_TOKEN = DATA['query']['tokens'][ttype+'token']
@@ -34,7 +36,7 @@ def login(S,token,uname,passwd): # require "login" type token
         'lgtoken':token,
         'format':"json"
     }
-    R = S.post(URL, data=PARAMS_1)
+    R = S.post(URL[0], data=PARAMS_1)
     DATA = R.json()
     debugctl(DATA)
     status = DATA["login"]["result"]
@@ -55,7 +57,7 @@ def getpage(S,title): # no token required
         "formatversion":"2",
         'format':"json"
     }
-    R = S.get(URL, params=PARAMS)
+    R = S.get(URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     TS = "1970-01-01T00:00:01+00:00"
@@ -91,7 +93,7 @@ def edit(S,token,title,content,summary,bot,basetimestamp,starttimestamp,minor=Fa
         z = PARAMS_3.copy()
         z.update({"minor":True})
         PARAMS_3 = z
-    R = S.post(URL, data=PARAMS_3)
+    R = S.post(URL[0], data=PARAMS_3)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -110,7 +112,7 @@ def whoami(S):
         "format": "json",
         "meta": "userinfo",
     }
-    R = S.get(URL, params=PARAMS)
+    R = S.get(URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     return DATA["query"]["userinfo"]
@@ -121,7 +123,7 @@ def logout(S,token): #require csrf token
         "token": token,
         "format": "json"
     }
-    R = S.post(URL, data=PARAMS_3)
+    R = S.post(URL[0], data=PARAMS_3)
     DATA = R.json()
     debugctl(DATA)
     if DATA == {}:
@@ -141,7 +143,7 @@ def revisions(S,title):
         "format": "json",
         "rvlimit":500,
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     PAGES = DATA["query"]["pages"]
@@ -159,7 +161,7 @@ def rollback(S,token,title,username): #rollback token required
         "user": username,
         "token": token,
     }
-    R = S.post(URL, data=PARAMS_6)
+    R = S.post(URL[0], data=PARAMS_6)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -185,7 +187,7 @@ def undo(S,token,title,id,bot,minor=False,reason=""): # csrf token required
         z = PARAMS_3.copy()
         z.update({"minor":True})
         PARAMS_3 = z
-    R = S.post(URL, data=PARAMS_3)
+    R = S.post(URL[0], data=PARAMS_3)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -208,7 +210,7 @@ def random(S,ns):
         "format":"json",
         "rnnamespace":ns,
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -227,7 +229,7 @@ def nsinfo(S):
         "format": "json",
         "siprop":"namespaces",
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -252,7 +254,7 @@ def wikiinfo(S):
         "format": "json",
         "siprop":"general",
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -290,7 +292,7 @@ def exinfo(S):
         "format": "json",
         "siprop":"extensions",
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -323,19 +325,19 @@ def getimage(S,iname):
         "format": "json",
         "prop": "imageinfo",
         "titles": iname,
-        "iiprop":"url",
+        "iiprop":"URL[0]",
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     PAGES = next(iter(DATA["query"]["pages"].values()))
-    IURL = ""
+    IURL[0] = ""
     try:
-        IURL = PAGES["imageinfo"][0]["url"]
+        IURL[0] = PAGES["imageinfo"][0]["URL[0]"]
     except:
         print("Not a file!")
         return False
-    return S.get(IURL).content
+    return S.get(IURL[0]).content
 
 def userinfo(S,uname):
     PARAMS = {
@@ -346,7 +348,7 @@ def userinfo(S,uname):
         "usprop": "blockinfo|cancreate|centralids|editcount|emailable|gender|groupmemberships|groups|implicitgroups|registration|rights",
         "utf8": "",
     }
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     try:
@@ -401,7 +403,7 @@ def emailuser(S,token,target,subj,text): # csrf token required
         "token": token,
         "format": "json"
     }
-    R = S.post(URL, data=PARAMS_3)
+    R = S.post(URL[0], data=PARAMS_3)
     DATA = R.json()
     debugctl(DATA)
     try:

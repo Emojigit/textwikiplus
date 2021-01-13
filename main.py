@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from modules import mediawiki as mw
-from modules import editor, rev, bsave
+from modules import editor, rev, bsave, chroot
 import requests, getpass
 from modules.err import ParamError
 S = requests.Session()
@@ -58,6 +58,7 @@ def logout(se):
 
 def main():
     editor.create()
+    mw.chroot(chroot.chroot())
     print("TextWikiEdit Plus By Cato Yiu")
     print("Copyright (c) 2020 Cato Yiu")
     print("This program is under GNU GPLv3 license.")
@@ -228,6 +229,8 @@ def main():
         except KeyboardInterrupt:
             print()
             pass
+        except SystemExit:
+            raise
         except:
             print()
             print("[ERROR] an error raised! You can report it at https://github.com/Emojigit/textwikiplus")
