@@ -1,4 +1,5 @@
 import requests
+from tqdm import tqdm
 URL = ["https://zh.wikipedia.org/w/api.php"]
 def chroot(root):
     URL[0] = root
@@ -325,19 +326,28 @@ def getimage(S,iname):
         "format": "json",
         "prop": "imageinfo",
         "titles": iname,
-        "iiprop":"URL[0]",
+        "iiprop":"timestamp|user|url",
     }
     R = S.get(url=URL[0], params=PARAMS)
     DATA = R.json()
     debugctl(DATA)
     PAGES = next(iter(DATA["query"]["pages"].values()))
-    IURL[0] = ""
+    IURL = [""]
     try:
-        IURL[0] = PAGES["imageinfo"][0]["URL[0]"]
+        IURL[0] = PAGES["imageinfo"][0]["url"]
     except:
         print("Not a file!")
         return False
-    return S.get(IURL[0]).content
+    FR = S.get(IURL[0], stream=True)
+    total_size_in_bytes= int(FR.headers.get('content-length', 0))
+    block_size = 1024 #1 Kibibyte
+    progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
+    ct = b""
+    for data in FR.iter_content(block_size):
+        progress_bar.update(len(data))
+        ct = ct + data
+    progress_bar.close()
+    return ct
 
 def userinfo(S,uname):
     PARAMS = {

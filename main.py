@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from modules import mediawiki as mw
 from modules import editor, rev, bsave, chroot, uc
-import requests, getpass
+import requests, getpass, readline
 from modules.err import ParamError
 S = requests.Session()
 
@@ -147,7 +147,7 @@ def main():
                     Uname = PARAMSplit[0]
                     Title = PARAMSplit[1].rstrip()
                 except KeyError:
-                    print("Usage: getimage <Image Name> <Path>")
+                    print("Usage: rollback <Image Name> <Path>")
                     continue
                 token = mw.token(S,"rollback")[0]
                 mw.rollback(S,token,Title,Uname)
@@ -200,7 +200,7 @@ def main():
                     cont = mw.getimage(S,iname)
                     if cont == False:
                         continue
-                        bsave.bsave(path,cont)
+                    bsave.bsave(path,cont)
                 except ParamError:
                     print("Usage: getimage <Image Name> <Path>")
                     pass
