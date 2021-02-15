@@ -74,9 +74,9 @@ def main():
                 param = cmddata[1]
             except IndexError:
                 param = ""
-            if cmd == "login":
+            if cmd == "botpasswd":
                 if param == "":
-                    print("Usage: login <Username>")
+                    print("Usage: botpasswd <Username>")
                     continue
                 paramm = param.rstrip()
                 token = mw.token(S,"login")[0]
@@ -115,7 +115,7 @@ def main():
                 exit(0)
             elif cmd == "help":
                 print("""List of command:
-* login <Username> : Login as lgusername
+* botpasswd <Username> : Login via botpasswd
 * view <Title> : view article's Content
 * edit <Title> : Edit an article
 * whoami : know who are you
