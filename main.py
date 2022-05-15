@@ -1,246 +1,259 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-from modules import mediawiki as mw
-from modules import editor, rev, bsave, chroot, uc
-import requests, getpass, readline
-from modules.err import ParamError
-S = requests.Session()
+import mwng as mw
+import cmd2, editor
 
-def edit(se,title):
-    tdata = mw.token(se,"csrf")
-    starttimestamp = tdata[1]
-    token = tdata[0]
-    pagedata = mw.getpage(se,title)
-    pagecontent = pagedata[0]
-    pageTS = pagedata[1]
-    content = editor.editor(pagecontent)
-    minor = False
-    summary = input("Please type your edit summary: ")
-    while True:
-        minput = input("Do you want to mark your edit a minor edit? (Y/N) ")
-        if minput == "Y" or minput == "y":
-            minor = True
-            break
-        elif minput == "N" or minput == "n":
-            minor = False
-            break
-        else:
-            print("Please enter `Y` or `N`.")
-    mw.edit(se,token,title,content,summary,False,pageTS,starttimestamp,minor)
+class App(cmd2.Cmd):
 
-def emailuser(se,uname):
-    tdata = mw.token(se,"csrf")
-    token = tdata[0]
-    title = input("Email subject: ")
-    content = editor.editor("")
-    mw.emailuser(se,token,uname,title,content)
+    C_MW = "MediaWiki Commands"
 
-def undo(se,title,id):
-    tdata = mw.token(se,"csrf")
-    token = tdata[0]
-    minor = False
-    summary = input("Please type your edit summary: ")
-    while True:
-        minput = input("Do you want to mark your edit a minor edit? (Y/N) ")
-        if minput == "Y" or minput == "y":
-            minor = True
-            break
-        elif minput == "N" or minput == "n":
-            minor = False
-            break
-        else:
-            print("Please enter `Y` or `N`.")
-    mw.undo(se,token,title,id,False,minor,summary)
+    def __init__(self,wiki):
+        super().__init__()
+        self.prompt="TWP> "
+        self.site = wiki
+        self.API = mw.API(wiki)
 
-def logout(se):
-    token = mw.token(S,"csrf")[0]
-    mw.logout(se,token)
-
-def main():
-    editor.create()
-    mw.chroot(chroot.chroot())
-    print("TextWikiEdit Plus By Cato Yiu")
-    print("Copyright (c) 2020 Cato Yiu")
-    print("This program is under GNU GPLv3 license.")
-    print("To get a list of command, use the `help` command.")
-    while True:
+    @cmd2.with_category(C_MW)
+    @cmd2.with_argument_list
+    def do_login(self,args):
+        """Use botpassword to login"""
+        user = args[0]
+        botpassword = self.read_input(prompt="Enter the botpassword: ") if len(args) == 1 else args[1]
+        self.poutput("Received: {} ({})".format(user,botpassword))
         try:
-            cmddata = input("> ").split(' ',1)
-            try:
-                cmd = cmddata[0]
-            except IndexError:
-                continue
-            try:
-                param = cmddata[1]
-            except IndexError:
-                param = ""
-            if cmd == "botpasswd":
-                if param == "":
-                    print("Usage: botpasswd <Username>")
-                    continue
-                paramm = param.rstrip()
-                token = mw.token(S,"login")[0]
-                print("Logging in as "+paramm)
-                passwd = getpass.getpass("Plase enter your password: ")
-                status = mw.login(S,token,paramm,passwd)
-                del passwd
-                if status == True:
-                    print("Logged in!")
-                else:
-                    print("Login Failed.")
-            elif cmd == "view":
-                if param == "":
-                    print("Usage: view <Page title>")
-                    continue
-                pagedata = mw.getpage(S,param.rstrip())
-                pagecontent = pagedata[0]
-                editor.ro(pagecontent)
-            elif cmd == "edit":
-                if param == "":
-                    print("Usage: edit <Page title>")
-                    continue
-                edit(S,param)
-            elif cmd == "whoami":
-                uinfo = mw.whoami(S)
-                if uinfo["id"] == 0:
-                    print("You are IP user, the IP is "+uinfo["name"])
-                else:
-                    print("You are "+uinfo["name"]+", the user ID is "+str(uinfo["id"]))
-            elif cmd == "logout":
-                logout(S)
-            elif cmd == "exit":
-                logout(S)
-                print("Bye")
-                editor.remove()
-                exit(0)
-            elif cmd == "help":
-                print("""List of command:
-* botpasswd <Username> : Login via botpasswd
-* view <Title> : view article's Content
-* edit <Title> : Edit an article
-* whoami : know who are you
-* logout : logout
-* rev <Title> : Get page history
-* rollback <Username> <title> : Rollback edit by Username in a page
-* undo <ID> <title> : Undo edit with ID <ID> in page <title>
-* random [NS ID] : Get random page title in [NS ID] or main namespace
-* clear : clear the screen
-* nsinfo : Get wiki's namespaces infomation
-* wikiinfo : Get wiki's general infomations
-* exinfo : Get wii's extensions infomation
-* getimage <File name> <Local dir> : Download a remote image
-* userinfo <Username> : get user info
-* emailuser : Email a user
-* debug <bool> : change debug setting
-* exit : Exit TextWikiPlus""")
-            elif cmd == "rev":
-                if param == "":
-                    print("Usage: rev <Page title>")
-                    continue
-                editor.ro(rev.get(mw.revisions(S,param.rstrip()),param.rstrip()))
-            elif cmd == "rollback":
-                if param == "":
-                    print("Usage: rollback <Username> <Title>")
-                    continue
-                PARAMSplit = param.split(' ',1)
-                try:
-                    Uname = PARAMSplit[0]
-                    Title = PARAMSplit[1].rstrip()
-                except KeyError:
-                    print("Usage: rollback <Image Name> <Path>")
-                    continue
-                token = mw.token(S,"rollback")[0]
-                mw.rollback(S,token,Title,Uname)
-            elif cmd == "undo":
-                try:
-                    if param == "":
-                        raise ParamError
-                    PARAMSplit = param.split(' ',1)
-                    try:
-                        ID = PARAMSplit[0]
-                        Title = PARAMSplit[1].rstrip()
-                    except KeyError:
-                        raise ParamError
-                    try:
-                        undo(S,Title,int(ID.rstrip()))
-                    except ValueError:
-                        raise ParamError
-                except ParamError:
-                    print("Usage: undo <ID> <Title>")
-                    pass
-            elif cmd == "random":
-                ns = 0
-                if param == "":
-                    ns = 0
-                else:
-                    try:
-                        ns = int(param.rstrip())
-                    except ValueError:
-                        print("Param must be None or int!")
-                        continue
-                mw.random(S,ns)
-            elif cmd == "clear":
-                print(chr(27) + "[2J")
-            elif cmd == "nsinfo":
-                mw.nsinfo(S)
-            elif cmd == "wikiinfo":
-                print(mw.wikiinfo(S))
-            elif cmd == "exinfo":
-                editor.ro(mw.exinfo(S))
-            elif cmd == "getimage":
-                try:
-                    if param == "":
-                        raise ParamError
-                    PARAMSplit = param.split(' ',1)
-                    try:
-                        iname = PARAMSplit[0].rstrip()
-                        path = PARAMSplit[1].rstrip()
-                    except KeyError:
-                        raise ParamError
-                    cont = mw.getimage(S,iname)
-                    if cont == False:
-                        continue
-                    bsave.bsave(path,cont)
-                except ParamError:
-                    print("Usage: getimage <Image Name> <Path>")
-                    pass
-            elif cmd == "userinfo":
-                if param == "":
-                    print("Usage: Userinfo <Username>")
-                    continue
-                mw.userinfo(S,param.rstrip())
-            elif cmd == "euser" or cmd == "emailuser":
-                if param == "":
-                    print("Usage: emailuser <Username>")
-                    continue
-                emailuser(S,param.rstrip())
-            elif cmd == "debug":
-                if param == "True" or param == "true" or param == "1":
-                    mw.setdebug(True)
-                elif param == "False" or param == "false" or param == "0":
-                    mw.setdebug(False)
-                else:
-                    print("current debug state: "+str(mw.setdebug()))
-            elif cmd == "uc" or cmd == "usercontribs":
-                if param == "":
-                    print("Usage: usercontribs <Username>")
-                    continue
-                editor.ro(uc.get(mw.usercontribs(S,param.rstrip()),param.rstrip()))
-            elif cmd == "":
-                continue
+            DATA = self.API.login(user,botpassword)
+        except mw.MWLoginError as e:
+            reason = e.dump["login"]["reason"]["*"]
+            self.poutput("Login failed: " + reason)
+            if self.debug:
+                self.poutput("Request: {}\nRespond: {}".format(e.request,e.dump))
+        else:
+            self.poutput("Login Success. ({})".format(DATA["login"]["lgusername"]))
+
+    def parse_userinfo(self,userinfo,whoami: bool = True):
+        username = userinfo["name"]
+        if "anon" in userinfo:
+            username = "Anon (IP: {})".format(userinfo["name"])
+        if whoami:
+            self.poutput("Current user info:")
+        else:
+            self.poutput("User info:")
+        self.poutput("Username: {}".format(username))
+        if "registrationdate" in userinfo:
+            self.poutput("Registered at: {}".format(userinfo["registrationdate"]))
+        self.poutput("Groups: {}".format(", ".join(userinfo["groups"])))
+        if whoami:
+            self.poutput("Email Address: {}".format((userinfo["email"] + " ({})".format(userinfo["emailauthenticated"])) if userinfo["email"] != "" else "[None]"))
+            self.poutput("Last contributed: {}".format(userinfo["latestcontrib"] if "latestcontrib" in userinfo else "[None]"))
+        if "blockid" in userinfo:
+            self.poutput("Blocked: True (ID: {})".format(userinfo["blockid"]))
+            self.poutput("Blocked by: {}".format(userinfo["blockedby"]))
+            self.poutput("Block reason: {}".format(userinfo["blockreason"] if userinfo["blockreason"] != "" else "[None]"))
+            self.poutput("Block started: {}".format(userinfo["blockedtimestamp"]))
+            self.poutput("Block end: {}".format(userinfo["blockexpiry"]))
+
+    @cmd2.with_category(C_MW)
+    def do_whoami(self,_):
+        """Get your own account/IP information"""
+        req = {
+            "action": "query",
+            "meta": "userinfo",
+            "uiprop": "|".join(["blockinfo","groups","editcount","ratelimits","email","registrationdate","latestcontrib"])
+        }
+        try:
+            DATA = self.API.get(req)
+        except mw.MWAPIError as e:
+            self.poutput("Error during getting user info: " + e.message)
+            if self.debug:
+                self.poutput("Request: {}\nRespond: {}".format(e.request,e.dump))
+        else:
+            userinfo = DATA["query"]["userinfo"]
+            self.parse_userinfo(userinfo)
+
+    @cmd2.with_category(C_MW)
+    def do_userinfo(self,arg):
+        """Get user info by name"""
+        req = {
+            "action": "query",
+            "list": "users",
+            "ususers": arg,
+            "usprop": "|".join(["blockinfo","groups","editcount","ratelimits","registrationdate","latestcontrib"])
+        }
+        try:
+            DATA = self.API.get(req)
+        except mw.MWAPIError as e:
+            self.poutput("Error during getting user info: " + e.message)
+            if self.debug:
+                self.poutput("Request: {}\nRespond: {}".format(e.request,e.dump))
+        else:
+            USER = DATA["query"]["users"][0]
+            if "invalid" in USER:
+                self.poutput("Error during getting user info: Invalid username")
+            elif "missing" in USER:
+                self.poutput("Error during getting user info: Not found")
             else:
-                print(cmd+": command not found")
-        except KeyboardInterrupt:
-            print()
-            pass
-        except SystemExit:
-            raise
-        except:
-            print()
-            print("[ERROR] an error raised! You can report it at https://github.com/Emojigit/textwikiplus")
-            editor.remove()
-            raise
+                self.parse_userinfo(USER,False)
+
+    @cmd2.with_category(C_MW)
+    def do_logout(self, arg):
+        """Logout from the MediaWiki site"""
+        try:
+            DATA = self.API.logout()
+        except mw.MWAPIError:
+            self.poutput("Error during logout: " + e.message)
+            if self.debug:
+                self.poutput("Request: {}\nRespond: {}".format(e.request,e.dump))
+        else:
+            self.poutput("Logout done.")
+
+    @cmd2.with_category(C_MW)
+    def do_view(self,arg):
+        """Get the content of a page"""
+        req = {
+            "action":"query",
+            "prop":"revisions",
+            "titles":arg,
+            "rvslots":"*",
+            "rvprop":"content",
+        }
+        try:
+            DATA = self.API.get(req)
+        except mw.MWAPIError as e:
+            self.poutput("Error during getting page: " + e.message)
+        else:
+            pages = DATA["query"]["pages"]
+            if "-1" in pages and "missing" in pages["-1"]:
+                self.poutput("Page not found.")
+            else:
+                page = pages[tuple(pages.keys())[0]]
+                content = page["revisions"][0]["slots"]["main"]["*"]
+                self.poutput(content)
+
+    @cmd2.with_category(C_MW)
+    def do_edit(self,arg):
+        """Edit a MediaWiki page"""
+        whoami_req = {
+            "action": "query",
+            "meta": "userinfo",
+        }
+        whoami = self.API.get(whoami_req)
+        if "anon" in whoami["query"]["userinfo"]:
+            if self.read_input(prompt="Not logged in. Still wanna edit? (y/N) ").upper()[0] != "Y":
+                self.poutput("Cancled.")
+                return
+        cont_req = {
+            "action":"query",
+            "prop":"revisions",
+            "titles":arg,
+            "rvslots":"*",
+            "rvprop":"content",
+        }
+        cont = "<!-- Page not found. Remove this line and start editing. -->\n"
+        try:
+            cont_DATA = self.API.get(cont_req)
+        except mw.MWAPIError as e:
+            self.poutput("Error during getting page: " + e.message)
+            if self.debug:
+                self.poutput("Request: {}\nRespond: {}".format(e.request,e.dump))
+        else:
+            pages = cont_DATA["query"]["pages"]
+            if "-1" in pages and "missing" in pages["-1"]:
+                pass
+            else:
+                page = pages[tuple(pages.keys())[0]]
+                cont = page["revisions"][0]["slots"]["main"]["*"]
+                token, ts = self.API.csrf()
+                if self.debug:
+                    self.poutput("Token: {}\nTimestamp: {}".format(token,ts))
+            while True:
+                cont = editor(text=cont)
+                try:
+                    confirm = self.read_input(prompt="Confirm? (Y)es, (N)o or (A)bort. ").upper()[0]
+                except IndexError:
+                    confirm = "N"
+                if confirm == "Y":
+                    summary = self.read_input(prompt="Please enter the summary: ")
+                    try:
+                        minor = self.read_input(prompt="Minor edit? (y/N) ").upper()[0] == "Y"
+                    except IndexError:
+                        minor = False
+                    try:
+                        DATA = self.API.edit(arg,{"text": cont, "minor": minor if minor else None},summary,token,ts)
+                    except mw.MWAPIError as e:
+                        self.poutput("Error during editing page: " + e.message)
+                        if self.debug:
+                            self.poutput("Request: {}\nRespond: {}".format(e.request,e.dump))
+                    else:
+                        self.poutput("Done. {}".format(DATA if self.debug else ""))
+                    return
+                elif confirm == "A":
+                    return
+
+    @cmd2.with_category(C_MW)
+    def do_currsite(self,_):
+        """Get the URL of `api.php` of the current connected site"""
+        self.poutput("Current site: {}".format(self.site))
+
+    @cmd2.with_category(C_MW)
+    def do_get(self,_):
+        """Do a GET request"""
+        req = {}
+        self.poutput("Format: <key>,<value>. Use EOF to end request. Use # to comment.")
+        while True:
+            try:
+                inp = self.read_input(prompt="> ")
+            except EOFError:
+                return
+            if inp == "EOF": break
+            if inp[0] == "#": continue
+            split = inp.split(",",1)
+            if len(split) == 1:
+                self.poutput("# ^ INVALID")
+                continue
+            req[split[0]] = split[1]
+        try:
+            self.poutput(self.API.get(req))
+        except mw.MWAPIError as e:
+            self.poutput(e.dump)
+
+    @cmd2.with_category(C_MW)
+    def do_post(self,_):
+        """Do a POST request"""
+        req = {}
+        self.poutput("Format: <key>,<value>. Use EOF to end request. Use # to comment.")
+        while True:
+            try:
+                inp = self.read_input(prompt="> ")
+            except EOFError:
+                return
+            if inp == "EOF": break
+            if inp[0] == "#": continue
+            split = inp.split(",",1)
+            if len(split) == 1:
+                self.poutput("> #! ^ INVALID")
+                continue
+            req[split[0]] = split[1]
+        try:
+            self.poutput(self.API.post(req))
+        except mw.MWAPIError as e:
+            self.poutput(e.dump)
+
+
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    site = input("Enter api.php URL or [<wmsite> <wmlang>]: ").split(" ")
+    if len(site) == 1:
+        try:
+            siteurl = getattr(mw.WMSites,site[0])()
+        except AttributeError:
+            siteurl = site[0]
+    else:
+        try:
+            siteurl = getattr(mw.WMSites,site[0])(site[1])
+        except AttributeError:
+            print("invalid")
+            exit(1)
+    c = App(siteurl)
+    sys.exit(c.cmdloop())
+
+
