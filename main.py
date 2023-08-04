@@ -41,7 +41,7 @@ class App(cmd2.Cmd):
             self.poutput("Registered at: {}".format(userinfo["registrationdate"]))
         self.poutput("Groups: {}".format(", ".join(userinfo["groups"])))
         if whoami:
-            self.poutput("Email Address: {}".format((userinfo["email"] + " ({})".format(userinfo["emailauthenticated"])) if userinfo["email"] != "" else "[None]"))
+            self.poutput("Email Address: {}".format((userinfo["email"] + " ({})".format(userinfo["emailauthenticated"] if "emailauthenticated" in userinfo else "False")) if userinfo["email"] != "" else "[None]"))
             self.poutput("Last contributed: {}".format(userinfo["latestcontrib"] if "latestcontrib" in userinfo else "[None]"))
         if "blockid" in userinfo:
             self.poutput("Blocked: True (ID: {})".format(userinfo["blockid"]))
@@ -56,7 +56,7 @@ class App(cmd2.Cmd):
         req = {
             "action": "query",
             "meta": "userinfo",
-            "uiprop": "|".join(["blockinfo","groups","editcount","ratelimits","email","registrationdate","latestcontrib"])
+            "uiprop": "*" # "|".join(["blockinfo","groups","editcount","ratelimits","email","registrationdate","latestcontrib"])
         }
         try:
             DATA = self.API.get(req)
